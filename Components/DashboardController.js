@@ -16,6 +16,36 @@ const DashboardController = async (req, res) => {
     const totalRevenue = orders.reduce((total, order) => {
       return total + order.totalPrice;
     }, 0);
+    // Top Selling Products
+
+const productMap = {};
+
+orders.forEach((order) => {
+  order.products.forEach((item) => {
+
+    if (!productMap[item.title]) {
+
+      productMap[item.title] = {
+        name: item.title,
+        image: item.image,
+        sold: 0,
+        revenue: 0,
+      };
+
+    }
+
+    productMap[item.title].sold += item.quantity;
+
+    productMap[item.title].revenue += item.price * item.quantity;
+
+  });
+});
+
+const topProducts = Object.values(productMap)
+.sort((a, b) => b.sold - a.sold)
+.slice(0, 5);
+
+
 
     return res.status(200).json({
       success: true,
@@ -25,6 +55,7 @@ const DashboardController = async (req, res) => {
         totalProducts,
         totalOrders,
         totalRevenue,
+        topProducts,
       },
     });
 
