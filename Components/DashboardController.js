@@ -25,12 +25,12 @@ orders.forEach((order) => {
 
     if (!productMap[item.title]) {
 
-      productMap[item.title] = {
-        name: item.title,
-        image: item.image,
-        sold: 0,
-        revenue: 0,
-      };
+    productMap[item.title] = {
+      title: item.title,
+      image: item.image,
+      sold: 0,
+      revenue: 0,
+    };
 
     }
 
@@ -128,8 +128,92 @@ const RecentOrdersController = async (req, res) => {
 
   }
 };
+const LatestCustomersController = async (req, res) => {
+  try {
+
+    const users = await User.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("username email");
+
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+const LowStockController = async (req, res) => {
+  try {
+
+    const products = await Product.find({
+      stock: { $lte: 10 }
+    })
+    .sort({ stock: 1 });
+
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+const CategoryAnalyticsController = async (req, res) => {
+  try {
+
+    const categories = await Product.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          total: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          total: -1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      categories,
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+
+
+
+
+
+
 module.exports = {
   DashboardController,
   MonthlySalesController,
   RecentOrdersController,
+  LatestCustomersController,
+  LowStockController,
+  CategoryAnalyticsController,
 };
