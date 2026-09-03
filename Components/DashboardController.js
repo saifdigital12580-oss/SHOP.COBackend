@@ -70,9 +70,13 @@ const topProducts = Object.values(productMap)
 
   }
 };
+
+
+
+
+
 const MonthlySalesController = async (req, res) => {
   try {
-
     const sales = await Order.aggregate([
       {
         $group: {
@@ -80,8 +84,12 @@ const MonthlySalesController = async (req, res) => {
             month: { $month: "$createdAt" },
           },
 
-          sales: {
+          revenue: {
             $sum: "$totalPrice",
+          },
+
+          orders: {
+            $sum: 1,
           },
         },
       },
@@ -100,6 +108,8 @@ const MonthlySalesController = async (req, res) => {
 
   } catch (error) {
 
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -107,6 +117,10 @@ const MonthlySalesController = async (req, res) => {
 
   }
 };
+
+
+
+
 const RecentOrdersController = async (req, res) => {
   try {
 
