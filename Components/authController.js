@@ -1,10 +1,11 @@
 
 const sendEmail = require("../Utils/sendEmail");
 const bcrypt = require('bcrypt');
-const User = require('../Models/User');
+const User = require('../Models/UserTemp');
 // const Order = require('../models/Order');
 const Product = require('../Models/Product')
 const jwt = require('jsonwebtoken');
+const Notification = require("../Models/Notifications");
 
 const userRegisterController = async (req, res) => {
   try {
@@ -67,12 +68,19 @@ const userLoginController = async (req, res, next) => {
 
     console.log("Cheaking----4")
  
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid Correct password!" })
     }
+    // ================= LOGIN NOTIFICATION =================
 
+   await Notification.create({
+     type: "user-login",
+     message: `${user.username} logged in`,
+     user: user._id,
+   });
 
     console.log("cheaking------5")
 
@@ -322,7 +330,31 @@ const DeleteUserController = async (req, res) => {
 
 
 
+const GetNotificationsController = async (req, res) => {
+  try {
+    const notifications = await Notification.find()
+      .populate("user", "username email phone address profileImage role")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: notifications.length,
+      notifications,
+    });
+
+  } catch (error) {
+    console.log("NOTIFICATION ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 
 
-module.exports = {userRegisterController,userLoginController,logout,authCheckController,UserGetController,DeleteUserController,MyProfileController,UpdateProfileController};
+
+
+
+module.exports = {userRegisterController,userLoginController,logout,authCheckController,UserGetController,DeleteUserController,MyProfileController,UpdateProfileController,GetNotificationsController};

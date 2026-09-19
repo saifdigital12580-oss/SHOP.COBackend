@@ -8,6 +8,7 @@ const {
   DeleteUserController,
   MyProfileController,
   UpdateProfileController,
+  GetNotificationsController,
   
 } = require("../Components/authController");
 
@@ -26,5 +27,12 @@ authRouter.delete("/delete-users/:id",DeleteUserController);
 authRouter.get("/auth-check",authMiddleware,authCheckController);
 authRouter.get( "/my-profile", authMiddleware, MyProfileController );
 authRouter.put( "/update-profile", authMiddleware, UpdateProfileController );
+
+authRouter.get(
+  "/notifications",
+  authMiddleware,
+  adminMiddleware,
+  GetNotificationsController
+);
 
 module.exports = authRouter;
