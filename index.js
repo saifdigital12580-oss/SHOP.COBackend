@@ -17,8 +17,11 @@ const WishlistRoute = require("./Routes/WishlistRoute");
 
 
 app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
+    origin: [
+        "http://localhost:5173",
+        "https://sk-store-theta.vercel.app"
+    ],
+    credentials: true,
 }));
 
 app.use(express.json());
