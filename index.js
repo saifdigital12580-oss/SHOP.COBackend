@@ -18,11 +18,12 @@ const WishlistRoute = require("./Routes/WishlistRoute");
 
 app.use(cors({
     origin: [
-        "https://shop-cobackend.onrender.com"
+        "http://localhost:5173",
+        "https://sk-store-theta.vercel.app"
     ],
     credentials: true,
 }));
-// "http://localhost:5173",
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
