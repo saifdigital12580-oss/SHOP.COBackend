@@ -18,12 +18,11 @@ const WishlistRoute = require("./Routes/WishlistRoute");
 
 app.use(cors({
     origin: [
-        "http://localhost:5173",
         "https://shop-cobackend.onrender.com"
     ],
     credentials: true,
 }));
-
+// "http://localhost:5173",
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
