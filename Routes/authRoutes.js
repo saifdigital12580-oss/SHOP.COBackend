@@ -21,8 +21,18 @@ authRouter.post("/register-user", userRegisterController);
 authRouter.post("/login-user", userLoginController);
 authRouter.post("/logout-user", logout);
 // authRouter.delete("/delete-user/:id",authMiddleware,adminMiddleware,DeleteUserController);
-authRouter.get(  "/get-user",  UserGetController);
-authRouter.delete("/delete-users/:id",DeleteUserController);
+authRouter.get(
+    "/get-user",
+    authMiddleware,
+    adminMiddleware,
+    UserGetController
+);
+authRouter.delete(
+    "/delete-users/:id",
+    authMiddleware,
+    adminMiddleware,
+    DeleteUserController
+);
 
 authRouter.get("/auth-check",authMiddleware,authCheckController);
 authRouter.get( "/my-profile", authMiddleware, MyProfileController );

@@ -31,6 +31,16 @@ const userRegisterController = async (req, res) => {
 
     await user.save(); // 🔥 IMPORTANT
 
+
+const safeUser = user.toObject();
+delete safeUser.password;
+return res.status(201).json({
+    success: true,
+    message: "Registered Successfully",
+    user: safeUser,
+});
+
+
     return res.status(201).json({
       message: "Registered Successfully",
       user,
@@ -216,38 +226,65 @@ const MyProfileController = async (req, res) => {
   }
 };
 const UpdateProfileController = async (req, res) => {
-  try {
-    const { username, phone, address, profileImage } = req.body;
 
-    const user = await User.findById(req.user.id);
+    try {
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+        const {
+            username,
+            phone,
+            address,
+            profileImage
+        } = req.body;
+
+
+        // Authenticated user ki ID se account find karo
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+        // =====================================
+        // UPDATE ALLOWED PROFILE FIELDS
+        // =====================================
+        if (typeof username === "string") {
+            user.username = username.trim();
+        }
+        if (typeof phone === "string") {
+            user.phone = phone.trim();
+        }
+        if (typeof address === "string") {
+            user.address = address.trim();
+        }
+        if (typeof profileImage === "string") {
+            user.profileImage = profileImage.trim();
+        }
+
+        // =====================================
+        // SAVE USER
+        // =====================================
+        await user.save();
+        // =====================================
+        // REMOVE PASSWORD FROM RESPONSE
+        // =====================================
+        const safeUser = user.toObject();
+        delete safeUser.password;
+        return res.status(200).json({
+            success: true,
+            message: "Profile Updated Successfully",
+            user: safeUser,
+        });
+
+    } catch (error) {
+        console.log("UPDATE PROFILE ERROR:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-
-    user.username = username || user.username;
-    user.phone = phone || user.phone;
-    user.address = address || user.address;
-    user.profileImage = profileImage || user.profileImage;
-
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Profile Updated Successfully",
-      user,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
-
 
 
 
